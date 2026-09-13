@@ -8,7 +8,7 @@
 
 @font-face {
   font-family: 'KrishaRegular';
-  src: url('../KrishaRegular-518Zx.otf') format('truetype');
+  src: url('/KrishaRegular-518Zx.otf') format('truetype');
   font-weight: normal;
   font-style: italic;
   font-display: swap;
@@ -447,7 +447,7 @@
 
 @font-face {
   font-family: 'KrishaRegular';
-  src: url('../assets/fonts/ITCGaramondStd-BkIta.ttf') format('truetype');
+  src: url('/ITCGaramondStd-BkIta.ttf') format('truetype');
   font-weight: normal;
   font-style: italic;
   font-display: swap;

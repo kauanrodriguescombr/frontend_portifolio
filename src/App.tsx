@@ -65,10 +65,6 @@ const App = () => {
     });
 
     (window as any).__lenis = lenis;
-    console.log("🚀 Lenis inicializado:", lenis);
-    console.log("🔍 isSmooth:", lenis.isSmooth);
-    console.log("🔍 isStopped:", lenis.isStopped);
-    console.log("🔍 prefersReducedMotion:", lenis.prefersReducedMotion);
 
     // Se a intro estiver rodando, para o Lenis até ela terminar
     if ((window as any).__introActive) {
