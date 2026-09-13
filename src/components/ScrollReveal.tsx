@@ -1,95 +1,96 @@
-import React, { useEffect, useRef } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-gsap.registerPlugin(ScrollTrigger);
+import React, { useEffect, useRef, useState } from 'react';
 
 interface ScrollRevealProps {
   children: React.ReactNode;
   className?: string;
-  stagger?: number;
-  delay?: number;
-  y?: number;
-  duration?: number;
-  start?: string;
+  stagger?: number; // em ms
+  delay?: number;   // em ms
+  y?: number;       // em px
+  duration?: number;// em ms
+  rootMargin?: string;
+  threshold?: number;
   as?: keyof JSX.IntrinsicElements;
 }
 
 export const ScrollReveal: React.FC<ScrollRevealProps> = ({
   children,
   className = '',
-  stagger = 0.1,
+  stagger = 180,
   delay = 0,
-  y = 16,
-  duration = 0.65,
-  start = 'top 88%',
+  y = 32,
+  duration = 1100,
+  rootMargin = '0px 0px -22% 0px',
+  threshold = 0.1,
   as: Component = 'div',
 }) => {
   const containerRef = useRef<HTMLElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
 
-    // Respeita acessibilidade caso o usuário prefira redução de movimento
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      return;
-    }
-
-    let ctx: gsap.Context | null = null;
-
-    const setupAnimation = () => {
-      const items = el.children.length > 0 ? Array.from(el.children) : [el];
-
-      ctx = gsap.context(() => {
-        gsap.fromTo(
-          items,
-          {
-            opacity: 0,
-            y,
-          },
-          {
-            opacity: 1,
-            y: 0,
-            duration,
-            delay,
-            stagger,
-            ease: 'power2.out',
-            scrollTrigger: {
-              trigger: el,
-              start,
-              once: true,
-            },
-            clearProps: 'transform,opacity',
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsVisible(true);
+            observer.unobserve(el);
           }
-        );
-      }, el);
-    };
+        });
+      },
+      {
+        root: null,
+        rootMargin,
+        threshold,
+      }
+    );
 
-    // Se a intro da página estiver ativa, aguarda a conclusão para sincronizar a viewport
+    observer.observe(el);
+
+    // Se a intro estiver ativa, aguarda o término para permitir revelar
     if ((window as any).__introActive) {
       const handleIntro = () => {
-        setupAnimation();
-        ScrollTrigger.refresh();
+        const currentRect = el.getBoundingClientRect();
+        if (currentRect.top < window.innerHeight && currentRect.bottom > 0) {
+          setIsVisible(true);
+          observer.unobserve(el);
+        }
       };
       window.addEventListener('intro:complete', handleIntro, { once: true });
       return () => {
         window.removeEventListener('intro:complete', handleIntro);
-        if (ctx) ctx.revert();
+        observer.disconnect();
       };
     }
 
-    setupAnimation();
-
     return () => {
-      if (ctx) ctx.revert();
+      observer.disconnect();
     };
-  }, [stagger, delay, y, duration, start]);
+  }, [rootMargin, threshold]);
+
+  const childArray = React.Children.toArray(children);
 
   return React.createElement(
     Component,
     { ref: containerRef, className },
-    children
+    childArray.map((child, index) => {
+      if (!React.isValidElement(child)) return child;
+
+      const itemDelay = delay + index * stagger;
+
+      const style: React.CSSProperties = {
+        ...(child.props.style || {}),
+        opacity: isVisible ? 1 : 0,
+        transform: isVisible ? 'translateY(0)' : `translateY(${y}px)`,
+        transition: `opacity ${duration}ms cubic-bezier(0.16, 1, 0.3, 1) ${itemDelay}ms, transform ${duration}ms cubic-bezier(0.16, 1, 0.3, 1) ${itemDelay}ms`,
+        willChange: isVisible ? 'auto' : 'opacity, transform',
+      };
+
+      return React.cloneElement(child, {
+        style,
+      } as any);
+    })
   );
 };
 

@@ -324,12 +324,203 @@
       0 2px 10px hsl(var(--primary) / 0.4);
   }
 
+  /* ─── Botão "Ver projetos" (Glassmorphism Translúcido + Shimmer idêntico a Pular Animação) ─── */
   .btn-outline {
-    @apply inline-flex items-center justify-center px-6 py-3 text-base font-medium rounded-full bg-transparent border-2 border-foreground text-foreground transition-all duration-200;
+    @apply inline-flex items-center justify-center px-6 py-3 text-base font-medium rounded-full transition-all duration-300;
+    position: relative;
+    overflow: hidden;
+    color: #f5f0e8;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+
+    /* Glassmorphism: gradiente translúcido idêntico ao botão de pular animação */
+    background: linear-gradient(
+      -75deg,
+      rgba(255, 255, 255, 0.05),
+      rgba(255, 255, 255, 0.18),
+      rgba(255, 255, 255, 0.05)
+    );
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+
+    /* Camadas de chanfro especular interno e profundidade de vidro */
+    box-shadow:
+      inset 0 1px 1px 0 rgba(255, 255, 255, 0.45),
+      inset 0 -1px 1px 0 rgba(0, 0, 0, 0.25),
+      inset 0 0 10px 1px rgba(255, 255, 255, 0.1),
+      0 4px 18px 0 rgba(0, 0, 0, 0.35);
+
+    cursor: pointer;
+    user-select: none;
+    text-decoration: none;
+    outline: none;
+  }
+
+  .btn-outline > * {
+    position: relative;
+    z-index: 2;
+    transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  /* Shimmer Effect (Light Sweep): faixa de luz atravessando a superfície */
+  .btn-outline::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -130%;
+    width: 85%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.06) 20%,
+      rgba(255, 255, 255, 0.5) 50%,
+      rgba(255, 255, 255, 0.06) 80%,
+      transparent 100%
+    );
+    transform: skewX(-25deg);
+    mix-blend-mode: screen;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .btn-outline:hover::before {
+    animation: introShimmerSweep 2.8s cubic-bezier(0.25, 1, 0.5, 1);
   }
 
   .btn-outline:hover {
-    @apply bg-foreground text-background;
+    background: linear-gradient(
+      -75deg,
+      rgba(255, 255, 255, 0.08),
+      rgba(255, 255, 255, 0.26),
+      rgba(255, 255, 255, 0.08)
+    );
+    border-color: rgba(255, 255, 255, 0.35);
+    box-shadow:
+      inset 0 1px 1px 0 rgba(255, 255, 255, 0.6),
+      inset 0 -1px 1px 0 rgba(0, 0, 0, 0.2),
+      inset 0 0 14px 2px rgba(255, 255, 255, 0.16),
+      0 6px 24px 0 rgba(0, 0, 0, 0.45);
+    transform: scale(1.02);
+    color: #ffffff;
+  }
+
+  .btn-outline:hover svg {
+    transform: translateX(4px);
+  }
+
+  .btn-outline:active {
+    transform: scale(0.98);
+    box-shadow:
+      inset 0 1px 2px 0 rgba(0, 0, 0, 0.35),
+      0 2px 10px rgba(0, 0, 0, 0.4);
+  }
+
+  /* ─── Botão Flutuante WhatsApp (Glassmorphism + Shimmer Effect) ────────── */
+  .whatsapp-btn {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 50;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 9999px;
+    color: #ffffff;
+
+    /* Glassmorphism: verde WhatsApp translúcido com gradiente angular */
+    background: linear-gradient(
+      -75deg,
+      rgba(37, 211, 102, 0.78),
+      rgba(37, 211, 102, 0.95),
+      rgba(37, 211, 102, 0.78)
+    );
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    overflow: hidden;
+
+    /* Camadas de chanfro especular interno e glow verde */
+    box-shadow:
+      inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.6),
+      inset 0 -1.5px 2px 0 rgba(0, 0, 0, 0.25),
+      inset 0 0 12px 1px rgba(255, 255, 255, 0.2),
+      0 8px 24px -2px rgba(37, 211, 102, 0.45),
+      0 4px 12px rgba(0, 0, 0, 0.35);
+
+    cursor: pointer;
+    text-decoration: none;
+    outline: none;
+    transition:
+      transform 0.3s cubic-bezier(0.25, 1, 0.5, 1),
+      background 0.3s ease,
+      border-color 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+
+  .whatsapp-btn > * {
+    position: relative;
+    z-index: 2;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+    transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  /* Shimmer Effect (Light Sweep) atravessando continuamente o botão WhatsApp */
+  .whatsapp-btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -140%;
+    width: 90%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.08) 20%,
+      rgba(255, 255, 255, 0.65) 50%,
+      rgba(255, 255, 255, 0.08) 80%,
+      transparent 100%
+    );
+    transform: skewX(-25deg);
+    mix-blend-mode: screen;
+    pointer-events: none;
+    z-index: 1;
+    animation: whatsappShimmer 4s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+  }
+
+  .whatsapp-btn:hover {
+    transform: scale(1.1);
+    background: linear-gradient(
+      -75deg,
+      rgba(37, 211, 102, 0.88),
+      rgba(37, 211, 102, 1),
+      rgba(37, 211, 102, 0.88)
+    );
+    border-color: rgba(255, 255, 255, 0.55);
+    box-shadow:
+      inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.8),
+      inset 0 -1.5px 2px 0 rgba(0, 0, 0, 0.2),
+      inset 0 0 16px 2px rgba(255, 255, 255, 0.3),
+      0 12px 30px rgba(37, 211, 102, 0.65),
+      0 6px 16px rgba(0, 0, 0, 0.4);
+  }
+
+  .whatsapp-btn:hover > * {
+    transform: scale(1.06);
+  }
+
+  .whatsapp-btn:hover::before {
+    animation: whatsappShimmer 1.8s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+  }
+
+  .whatsapp-btn:active {
+    transform: scale(0.95);
+    box-shadow:
+      inset 0 1px 2px 0 rgba(0, 0, 0, 0.3),
+      0 4px 14px rgba(37, 211, 102, 0.4);
   }
 
   .section-accent-bg {
@@ -432,6 +623,40 @@
   }
   100% {
     left: 130%;
+    opacity: 0;
+  }
+}
+
+@keyframes introShimmerSweep {
+  0% {
+    left: -100%;
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    left: 130%;
+    opacity: 0;
+  }
+}
+
+@keyframes whatsappShimmer {
+  0% {
+    left: -140%;
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    left: 140%;
     opacity: 0;
   }
 }
