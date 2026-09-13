@@ -40,6 +40,37 @@ const IntroAnimation = ({ onComplete }: IntroAnimationProps) => {
   const nameRef = useRef<HTMLDivElement>(null);
   const bridgeRef = useRef<HTMLDivElement>(null);
   const portfolioRef = useRef<HTMLDivElement>(null);
+  const tlRef = useRef<gsap.core.Timeline | null>(null);
+  const isCompletedRef = useRef(false);
+
+  const handleSkip = () => {
+    if (isCompletedRef.current) return;
+    isCompletedRef.current = true;
+
+    if (tlRef.current) {
+      tlRef.current.kill();
+    }
+
+    if (overlayRef.current) {
+      overlayRef.current.classList.remove("intro-inverted");
+      overlayRef.current.style.backgroundColor = "#000";
+
+      gsap.to(overlayRef.current, {
+        opacity: 0,
+        duration: 0.3,
+        ease: "power2.out",
+        onComplete: () => {
+          document.body.style.overflow = "";
+          window.dispatchEvent(new CustomEvent("intro:complete"));
+          onComplete();
+        },
+      });
+    } else {
+      document.body.style.overflow = "";
+      window.dispatchEvent(new CustomEvent("intro:complete"));
+      onComplete();
+    }
+  };
 
   useEffect(() => {
     const overlay = overlayRef.current;
@@ -61,12 +92,15 @@ const IntroAnimation = ({ onComplete }: IntroAnimationProps) => {
     const tl = gsap.timeline({
       defaults: { ease: "power3.out" },
       onComplete: () => {
+        if (isCompletedRef.current) return;
+        isCompletedRef.current = true;
         // Restaura scroll, dispara evento para o Hero iniciar suas animações e chama o callback
         document.body.style.overflow = "";
         window.dispatchEvent(new CustomEvent("intro:complete"));
         onComplete();
       },
     });
+    tlRef.current = tl;
 
     /**
      * SEQUÊNCIA:
@@ -111,6 +145,7 @@ const IntroAnimation = ({ onComplete }: IntroAnimationProps) => {
       .call(() => {
         // Inversão de cores instantânea + reset do texto
         gsap.set(overlay, { backgroundColor: "#fff" });
+        overlay.classList.add("intro-inverted");
         if (kauanTextEl) kauanTextEl.textContent = '';
       }, undefined, 2.0)
       // Aparece instantaneamente (sem y, sem scale)
@@ -120,6 +155,7 @@ const IntroAnimation = ({ onComplete }: IntroAnimationProps) => {
       // Reverte fundo quando Kauan some
       .call(() => {
         gsap.set(overlay, { backgroundColor: "#000" });
+        overlay.classList.remove("intro-inverted");
       }, undefined, 5.0)
 
       // ─── e esse é o meu ────────────────────────────────────────────────────
@@ -198,8 +234,8 @@ const IntroAnimation = ({ onComplete }: IntroAnimationProps) => {
   }, [onComplete]);
 
   return (
-    <div ref={overlayRef} className="intro-overlay" aria-hidden="true">
-      <div className="intro-text-wrapper">
+    <div ref={overlayRef} className="intro-overlay">
+      <div className="intro-text-wrapper" aria-hidden="true">
         <div ref={olaRef} className="intro-text intro-text--ola"><CharText text="Olá," /></div>
         <div ref={subRef} className="intro-text intro-text--sub">Me chamo</div>
         <div ref={nameRef} className="intro-text intro-text--name">
@@ -208,6 +244,30 @@ const IntroAnimation = ({ onComplete }: IntroAnimationProps) => {
         <div ref={bridgeRef} className="intro-text intro-text--bridge">e esse é o meu</div>
         <div ref={portfolioRef} className="intro-text intro-text--portfolio"><CharText text="Portifólio" /></div>
       </div>
+
+      <button
+        type="button"
+        className="intro-skip-btn"
+        onClick={handleSkip}
+        aria-label="Pular animação de introdução"
+      >
+        <span className="intro-skip-btn__text">Pular Animação</span>
+        <svg
+          className="intro-skip-btn__icon"
+          width="15"
+          height="15"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M5 12h14" />
+          <path d="m12 5 7 7-7 7" />
+        </svg>
+      </button>
     </div>
   );
 };

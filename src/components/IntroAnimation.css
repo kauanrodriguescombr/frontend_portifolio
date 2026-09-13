@@ -111,3 +111,202 @@
   transform-origin: center;
   will-change: transform, opacity;
 }
+
+/* ─── Botão "Pular animação" (Glassmorphism + Shimmer Effect) ───────────── */
+.intro-skip-btn {
+  position: absolute;
+  bottom: 2.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.55rem 1.25rem 0.55rem 1.35rem;
+  min-height: 40px;
+
+  font-family: var(--font-body, 'Roboto', sans-serif);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: #f5f0e8;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+
+  /* Glassmorphism: gradiente angular + blur translúcido */
+  background: linear-gradient(
+    -75deg,
+    rgba(255, 255, 255, 0.05),
+    rgba(255, 255, 255, 0.18),
+    rgba(255, 255, 255, 0.05)
+  );
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 9999px;
+  overflow: hidden; /* Contém a faixa de Shimmer perfeitamente dentro do formato pill */
+
+  /* Múltiplas camadas de sombras e realces internos para profundidade de vidro */
+  box-shadow:
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.25),
+    inset 0 0 10px 1px rgba(255, 255, 255, 0.1),
+    0 4px 18px 0 rgba(0, 0, 0, 0.35);
+
+  cursor: pointer;
+  user-select: none;
+  text-decoration: none;
+  outline: none;
+
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    color 0.3s ease;
+
+  animation: introSkipFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+}
+
+/* Shimmer Effect (Light Sweep): faixa de luz que atravessa suavemente a superfície no hover */
+.intro-skip-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -130%;
+  width: 85%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.06) 20%,
+    rgba(255, 255, 255, 0.5) 50%,
+    rgba(255, 255, 255, 0.06) 80%,
+    transparent 100%
+  );
+  transform: skewX(-25deg);
+  mix-blend-mode: screen;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.intro-skip-btn:hover::before {
+  animation: introShimmerSweep 2.8s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.intro-skip-btn:hover {
+  background: linear-gradient(
+    -75deg,
+    rgba(255, 255, 255, 0.08),
+    rgba(255, 255, 255, 0.26),
+    rgba(255, 255, 255, 0.08)
+  );
+  border-color: rgba(255, 255, 255, 0.35);
+  box-shadow:
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.2),
+    inset 0 0 14px 2px rgba(255, 255, 255, 0.16),
+    0 6px 24px 0 rgba(0, 0, 0, 0.45);
+}
+
+.intro-skip-btn:focus-visible {
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.5),
+    0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.intro-skip-btn__text {
+  position: relative;
+  z-index: 2;
+  display: inline-block;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.intro-skip-btn__icon {
+  position: relative;
+  z-index: 2;
+  display: inline-block;
+  flex-shrink: 0;
+  transform: translateX(0);
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  pointer-events: none;
+}
+
+/* Microanimação no hover: o texto permanece no lugar e a seta se desloca suavemente para a direita */
+.intro-skip-btn:hover .intro-skip-btn__icon {
+  transform: translateX(6px);
+}
+
+/* Transição de cores quando o fundo da animação inverte para branco (KAUAN) */
+.intro-overlay.intro-inverted .intro-skip-btn {
+  color: #111111;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
+  background: linear-gradient(
+    -75deg,
+    rgba(0, 0, 0, 0.04),
+    rgba(0, 0, 0, 0.1),
+    rgba(0, 0, 0, 0.04)
+  );
+  border-color: rgba(0, 0, 0, 0.16);
+  box-shadow:
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.15),
+    0 4px 18px rgba(0, 0, 0, 0.1);
+}
+
+.intro-overlay.intro-inverted .intro-skip-btn:hover {
+  background: linear-gradient(
+    -75deg,
+    rgba(0, 0, 0, 0.06),
+    rgba(0, 0, 0, 0.14),
+    rgba(0, 0, 0, 0.06)
+  );
+  border-color: rgba(0, 0, 0, 0.28);
+  box-shadow:
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.8),
+    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.2),
+    0 6px 22px rgba(0, 0, 0, 0.14);
+}
+
+.intro-overlay.intro-inverted .intro-skip-btn:focus-visible {
+  box-shadow:
+    0 0 0 2px rgba(0, 0, 0, 0.4),
+    0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes introShimmerSweep {
+  0% {
+    left: -100%;
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    left: 130%;
+    opacity: 0;
+  }
+}
+
+@keyframes introSkipFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@media (max-width: 640px) {
+  .intro-skip-btn {
+    bottom: max(1.5rem, env(safe-area-inset-bottom, 1.5rem));
+    padding: 0.45rem 1.1rem 0.45rem 1.2rem;
+    font-size: 0.75rem;
+    min-height: 36px;
+  }
+}

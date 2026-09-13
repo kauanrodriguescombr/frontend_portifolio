@@ -12,6 +12,10 @@ import "lenis/dist/lenis.css";
 import Index from "./pages/Index";
 import Links from "./pages/Links";
 import NotFound from "./pages/NotFound";
+import { AuthProvider } from "./contexts/AuthContext";
+import AdminLogin from "./pages/admin/AdminLogin";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminRouteGuard from "./components/admin/AdminRouteGuard";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -98,14 +102,28 @@ const App = () => {
           <TooltipProvider>
             <Toaster />
             <Sonner />
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/links" element={<Links />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
+            <AuthProvider>
+              <BrowserRouter>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/links" element={<Links />} />
+
+                  {/* Rotas Administrativas */}
+                  <Route path="/admin/login" element={<AdminLogin />} />
+                  <Route
+                    path="/admin"
+                    element={
+                      <AdminRouteGuard>
+                        <AdminDashboard />
+                      </AdminRouteGuard>
+                    }
+                  />
+
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </BrowserRouter>
+            </AuthProvider>
           </TooltipProvider>
         </QueryClientProvider>
       </div>
