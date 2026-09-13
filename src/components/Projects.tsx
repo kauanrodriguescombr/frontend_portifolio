@@ -2,6 +2,7 @@ import { useLayoutEffect, useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import api, { getImageUrl } from '@/services/api';
+import ScrollReveal from './ScrollReveal';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -180,12 +181,12 @@ const Projects = () => {
         ref={triggerRef}
         className="h-screen min-h-[500px] w-full flex flex-col justify-center overflow-hidden pt-20 pb-20"
       >
-        <div className="text-center mb-8 shrink-0 px-4">
+        <ScrollReveal className="text-center mb-8 shrink-0 px-4">
           <h2 className="section-title">Meus Projetos</h2>
           <p className="section-subtitle max-w-4xl mx-auto">
             Seleção dos meus trabalhos mais recentes, demonstrando habilidades em desenvolvimento de sites e design gráfico.
           </p>
-        </div>
+        </ScrollReveal>
 
         {/* Esteira horizontal dos cards */}
         <div

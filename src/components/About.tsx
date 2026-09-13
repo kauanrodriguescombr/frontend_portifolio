@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import ScrollReveal from './ScrollReveal';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -59,14 +60,16 @@ const About = () => {
 
           {/* Lado Esquerdo Fixo: Título "SOBRE MIM?" */}
           <div className="md:col-span-6 lg:col-span-6 flex items-center z-10 pt-8 md:pt-0">
-            <h2
-              className="!leading-[80%] uppercase font-heading tracking-tight whitespace-nowrap"
-              style={{ fontSize: 'clamp(3rem, 12vw, 22rem)' }}
-            >
-              <span className="text-white"
-                style={{ fontSize: 'clamp(2.5rem, min(18vw, 28vh), 22rem)' }}
-              >SOBRE MIM</span>
-            </h2>
+            <ScrollReveal>
+              <h2
+                className="!leading-[80%] uppercase font-heading tracking-tight whitespace-nowrap"
+                style={{ fontSize: 'clamp(3rem, 12vw, 22rem)' }}
+              >
+                <span className="text-white"
+                  style={{ fontSize: 'clamp(2.5rem, min(18vw, 28vh), 22rem)' }}
+                >SOBRE MIM</span>
+              </h2>
+            </ScrollReveal>
           </div>
 
           {/* Lado Direito: Palco dos textos (cada bloco tem a altura da área útil h-[65vh] md:h-screen) */}

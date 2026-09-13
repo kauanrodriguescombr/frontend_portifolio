@@ -1,4 +1,5 @@
 import { Mail, MessageCircle, Github, Linkedin, FolderOpen } from 'lucide-react';
+import ScrollReveal from './ScrollReveal';
 
 const socialLinks = [
   {
@@ -25,7 +26,7 @@ const Contact = () => {
         <div className="flex flex-col justify-between h-full gap-8 md:gap-12">
 
           {/* Canto Superior Esquerdo */}
-          <div className="text-left">
+          <ScrollReveal className="text-left">
             <h2
               className="!leading-[80%] uppercase font-heading text-left mb-3"
               style={{ fontSize: 'clamp(2.5rem, 10vw, 22rem)' }}
@@ -37,7 +38,7 @@ const Contact = () => {
             <p className="font-body text-xl sm:text-2xl md:text-3xl text-muted-foreground leading-relaxed">
               Se você tem uma boa ideia, vamos tirá-la do papel.
             </p>
-          </div>
+          </ScrollReveal>
 
           {/* Seção de Ações e Redes (Horizontal) */}
           <div className="flex flex-col md:flex-row items-center justify-between gap-6 w-full pt-4">

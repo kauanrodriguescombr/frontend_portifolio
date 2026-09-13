@@ -1,4 +1,5 @@
 import Carousel from './Carousel';
+import ScrollReveal from './ScrollReveal';
 
 const skills = [
   {
@@ -73,12 +74,12 @@ const Skills = () => {
       }}
     >
       <div className="section-container">
-        <div className="mb-12 text-center">
+        <ScrollReveal className="mb-12 text-center">
           <h2 className="section-title">Habilidades & Tecnologias</h2>
           <p className="section-subtitle max-w-4xl mx-auto">
             Ferramentas e tecnologias que utilizo no dia a dia.
           </p>
-        </div>
+        </ScrollReveal>
 
         <Carousel>
           {skills.map((skill, index) => (

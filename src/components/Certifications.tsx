@@ -4,6 +4,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import api, { getImageUrl } from '@/services/api';
+import ScrollReveal from './ScrollReveal';
 
 export interface CertificateItem {
   id?: string;
@@ -145,12 +146,12 @@ const Certifications = () => {
   return (
     <section id="certificacoes" className="py-20 md:py-32">
       <div className="section-container">
-        <div className="mb-12 text-center">
+        <ScrollReveal className="mb-12 text-center">
           <h2 className="section-title">Certificações & Cursos</h2>
           <p className="section-subtitle max-w-4xl mx-auto">
             Formação contínua para entregar sempre o melhor resultado.
           </p>
-        </div>
+        </ScrollReveal>
 
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
