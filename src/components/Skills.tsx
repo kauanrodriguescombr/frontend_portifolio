@@ -1,4 +1,7 @@
-import Carousel from './Carousel';
+import { useState } from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay } from 'swiper/modules';
+import 'swiper/css';
 import ScrollReveal from './ScrollReveal';
 
 const skills = [
@@ -44,25 +47,48 @@ const skills = [
   }
 ];
 
-const SkillCard = ({ skill }: { skill: typeof skills[0] }) => (
-  <div className="bg-white/10 backdrop-blur-sm border-2 border-white/20 rounded-2xl p-8 h-full flex flex-col justify-center items-center text-center transition-all duration-300 hover:border-white/40 hover:bg-white/15 backdrop-blur-3xl">
-    <div className="w-20 h-20 mb-6 flex items-center justify-center bg-white/10 rounded-xl">
-      <img
-        src={skill.icon}
-        alt={skill.title}
-        className="w-14 h-14 object-contain"
-      />
+const SkillCard = ({ skill }: { skill: typeof skills[0] }) => {
+  const [shimmerKey, setShimmerKey] = useState(0);
+  const [isShimmering, setIsShimmering] = useState(false);
+
+  const handleMouseEnter = () => {
+    setIsShimmering(true);
+    setShimmerKey((prev) => prev + 1);
+  };
+
+  const handleAnimationEnd = () => {
+    setIsShimmering(false);
+  };
+
+  return (
+    <div
+      onMouseEnter={handleMouseEnter}
+      className="group card-brutalist relative overflow-hidden bg-white/10 backdrop-blur-sm border-2 border-white/20 rounded-2xl p-6 sm:p-8 h-full min-h-[360px] sm:min-h-[400px] flex flex-col justify-between items-start text-left transition-all duration-300 ease-out hover:scale-[1.03] hover:border-white/40 hover:bg-white/15 backdrop-blur-3xl select-none"
+    >
+      {/* Faixa de Luz Shimmer */}
+      {isShimmering && (
+        <span
+          key={shimmerKey}
+          className="project-card-shimmer"
+          onAnimationEnd={handleAnimationEnd}
+          aria-hidden="true"
+        />
+      )}
+
+      <div className="relative z-10 flex-1 w-full flex items-center justify-center py-4">
+        <img
+          src={skill.icon}
+          alt={skill.title}
+          className="w-[136px] h-[136px] sm:w-[152px] sm:h-[152px] object-contain select-none pointer-events-none drop-shadow-md transition-transform duration-500 ease-out delay-0 group-hover:delay-150 group-hover:scale-110"
+        />
+      </div>
+
+      <h3 className="relative z-10 font-heading text-4xl sm:text-5xl md:text-6xl text-white tracking-wide mt-auto text-left">
+        {skill.title}
+      </h3>
     </div>
-
-    <h3 className="font-heading text-6xl text-white mb-3 tracking-[.7px]">
-      {skill.title}
-    </h3>
-
-    <p className="font-body text-base text-white/80">
-      {skill.description}
-    </p>
-  </div>
-);
+  );
+};
 
 const Skills = () => {
   return (
@@ -81,11 +107,32 @@ const Skills = () => {
           </p>
         </ScrollReveal>
 
-        <Carousel>
+        <Swiper
+          modules={[Autoplay]}
+          spaceBetween={12}
+          slidesPerView={1.25}
+          centeredSlides={skills.length > 2}
+          loop={skills.length > 2}
+          speed={1200}
+          autoplay={{
+            delay: 4000,
+            disableOnInteraction: false,
+            pauseOnMouseEnter: true,
+            reverseDirection: true,
+          }}
+          breakpoints={{
+            480: { slidesPerView: 1.35, spaceBetween: 14 },
+            640: { slidesPerView: 2, spaceBetween: 14 },
+            1024: { slidesPerView: 3, spaceBetween: 16 },
+          }}
+          className="skills-swiper carousel-blur py-8 -my-8 px-2"
+        >
           {skills.map((skill, index) => (
-            <SkillCard key={index} skill={skill} />
+            <SwiperSlide key={index} className="h-auto">
+              <SkillCard skill={skill} />
+            </SwiperSlide>
           ))}
-        </Carousel>
+        </Swiper>
       </div>
     </section>
   );

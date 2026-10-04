@@ -137,8 +137,23 @@
   }
 
   .section-title {
-    @apply text-6xl md:text-6xl lg:text-9xl text-foreground mb-4;
+    font-size: clamp(2.5rem, min(15vw, 20vh), 6rem);
+    line-height: 0.9;
+    @apply text-foreground mb-4;
     font-family: var(--font-heading);
+  }
+
+  @media (min-width: 640px) {
+    .section-title {
+      font-size: clamp(3rem, min(18vw, 28vh), 7rem);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .section-title {
+      font-size: 8rem;
+      line-height: 1;
+    }
   }
 
   .section-subtitle {
@@ -221,7 +236,7 @@
       inset 0 0 20px 2px rgba(255, 255, 255, 0.06),
       0 12px 40px 0 rgba(0, 0, 0, 0.5),
       0 0 24px -4px hsl(var(--primary) / 0.25);
-    transform: translateY(-4px);
+    transform: scale(1.03);
   }
 
   .project-card-shimmer {
@@ -701,11 +716,21 @@
   background-size: cover;
 }
 
-.certifications-swiper .swiper-slide {
+.certifications-swiper,
+.skills-swiper {
+  padding-top: 2.25rem !important;
+  padding-bottom: 2.25rem !important;
+  margin-top: -2.25rem !important;
+  margin-bottom: -2.25rem !important;
+}
+
+.certifications-swiper .swiper-slide,
+.skills-swiper .swiper-slide {
   height: auto;
 }
 
-.certifications-swiper .swiper-wrapper {
+.certifications-swiper .swiper-wrapper,
+.skills-swiper .swiper-wrapper {
   align-items: stretch;
 }
 
@@ -720,4 +745,10 @@
   filter: blur(0);
   opacity: 1;
   transform: scale(1);
+  z-index: 10;
+}
+
+.certifications-swiper .swiper-slide:hover,
+.skills-swiper .swiper-slide:hover {
+  z-index: 20;
 }

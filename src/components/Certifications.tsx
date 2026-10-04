@@ -169,7 +169,7 @@ const Certifications = () => {
           <Swiper
             modules={[Autoplay]}
             spaceBetween={12}
-            slidesPerView={1}
+            slidesPerView={1.25}
             centeredSlides={certificatesList.length > 2}
             loop={certificatesList.length > 2}
             speed={1200}
@@ -179,10 +179,11 @@ const Certifications = () => {
               pauseOnMouseEnter: true,
             }}
             breakpoints={{
+              480: { slidesPerView: 1.35, spaceBetween: 14 },
               640: { slidesPerView: 2, spaceBetween: 14 },
               1024: { slidesPerView: Math.min(3, certificatesList.length), spaceBetween: 16 },
             }}
-            className="certifications-swiper carousel-blur"
+            className="certifications-swiper carousel-blur py-8 -my-8 px-2"
           >
             {certificatesList.map((cert, index) => (
               <SwiperSlide key={cert.id || index} className="h-auto">

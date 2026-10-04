@@ -100,6 +100,17 @@ const ProjectCard = ({ project }: { project: ProjectItem }) => {
   );
 };
 
+// Configurações de sobreposição entre o movimento horizontal e o pin da seção
+// Em telas responsivas (tablets e celulares < 1024px), o offset é zero para sincronização direta e travamento imediato.
+// Em desktop (≥ 1024px), mantém a sobreposição de 650px.
+const getOffsets = () => {
+  const isResponsive = typeof window !== 'undefined' && window.innerWidth < 1024;
+  return {
+    horizontalStart: isResponsive ? 0 : 650,
+    pinEnd: isResponsive ? 0 : 650,
+  };
+};
+
 const Projects = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
@@ -141,7 +152,7 @@ const Projects = () => {
     if (isLoading || projectsList.length === 0) return;
 
     const ctx = gsap.context(() => {
-      if (!triggerRef.current || !trackRef.current) return;
+      if (!sectionRef.current || !triggerRef.current || !trackRef.current) return;
 
       const track = trackRef.current;
       const cards = track.children;
@@ -151,23 +162,56 @@ const Projects = () => {
       const lastCard = cards[cards.length - 1] as HTMLElement;
 
       const getScrollAmount = () => {
-        return lastCard.offsetLeft - firstCard.offsetLeft;
+        return Math.max(0, lastCard.offsetLeft - firstCard.offsetLeft);
       };
 
-      const distance = getScrollAmount();
+      const getPinDuration = () => {
+        const { horizontalStart, pinEnd } = getOffsets();
+        return Math.max(0, getScrollAmount() - horizontalStart - pinEnd);
+      };
 
+      // 1. ScrollTrigger dedicado ao pin da seção
+      const pinTrigger = ScrollTrigger.create({
+        trigger: sectionRef.current,
+        pin: triggerRef.current,
+        start: 'top top',
+        end: () => `+=${getPinDuration()}`,
+        invalidateOnRefresh: true,
+      });
+
+      // 2. Animação horizontal dos cards sincronizada com os offsets de entrada e saída:
+      // - No desktop: começa 650px antes e termina 650px depois
+      // - No responsivo (< 1024px): offsets zerados, sincronia direta
       gsap.to(track, {
-        x: -distance,
+        x: () => -getScrollAmount(),
         ease: 'none',
         scrollTrigger: {
-          trigger: triggerRef.current,
-          pin: true,
-          scrub: 1,
-          start: 'top top',
-          end: () => `+=${getScrollAmount()}`,
+          start: () => pinTrigger.start - getOffsets().horizontalStart,
+          end: () => pinTrigger.end + getOffsets().pinEnd,
+          scrub: 1.4,
           invalidateOnRefresh: true,
         },
       });
+
+      // Recalcula ScrollTrigger se imagens terminarem de carregar
+      const images = track.querySelectorAll('img');
+      images.forEach((img) => {
+        if (!img.complete) {
+          img.addEventListener('load', () => ScrollTrigger.refresh(), { once: true });
+        }
+      });
+
+      // Se a animação de introdução estiver ativa no primeiro carregamento,
+      // atualiza o ScrollTrigger após a intro finalizar
+      if ((window as any).__introActive) {
+        const handleIntro = () => {
+          ScrollTrigger.refresh();
+        };
+        window.addEventListener('intro:complete', handleIntro, { once: true });
+        return () => {
+          window.removeEventListener('intro:complete', handleIntro);
+        };
+      }
 
       ScrollTrigger.refresh();
     }, sectionRef);
@@ -176,7 +220,7 @@ const Projects = () => {
   }, [isLoading, projectsList]);
 
   return (
-    <section ref={sectionRef} id="projetos" className="relative overflow-hidden">
+    <section ref={sectionRef} id="projetos" className="relative overflow-hidden w-full max-w-full">
       <div
         ref={triggerRef}
         className="h-screen min-h-[500px] w-full flex flex-col justify-center overflow-hidden pt-20 pb-20"

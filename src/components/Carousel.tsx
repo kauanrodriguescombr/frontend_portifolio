@@ -1,5 +1,4 @@
 import { useState, useEffect, ReactNode } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface CarouselProps {
   children: ReactNode[];
@@ -17,6 +16,31 @@ const Carousel = ({ children, autoPlay = true, interval = 4000 }: CarouselProps)
 
   const goToNext = () => {
     setCurrentIndex((prev) => (prev + 1) % totalItems);
+  };
+
+  useEffect(() => {
+    if (!autoPlay) return;
+    const timer = setInterval(() => {
+      goToNext();
+    }, interval);
+    return () => clearInterval(timer);
+  }, [autoPlay, interval, totalItems]);
+
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStartX(e.touches[0].clientX);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX === null) return;
+    const diff = touchStartX - e.changedTouches[0].clientX;
+    if (diff > 50) {
+      goToNext();
+    } else if (diff < -50) {
+      goToPrevious();
+    }
+    setTouchStartX(null);
   };
 
   const getCardPosition = (index: number) => {
@@ -37,50 +61,41 @@ const Carousel = ({ children, autoPlay = true, interval = 4000 }: CarouselProps)
       case 'center':
         return `${baseStyles} left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 scale-100 opacity-100`;
       case 'left':
-        return `${baseStyles} left-0 sm:left-[5%] -translate-y-1/2 z-20 scale-75 sm:scale-85 opacity-40 sm:opacity-60`;
+        return `${baseStyles} left-0 sm:left-[5%] -translate-y-1/2 z-20 scale-75 sm:scale-85 opacity-40 sm:opacity-60 cursor-pointer`;
       case 'right':
-        return `${baseStyles} right-0 sm:right-[5%] -translate-y-1/2 z-20 scale-75 sm:scale-85 opacity-40 sm:opacity-60`;
+        return `${baseStyles} right-0 sm:right-[5%] -translate-y-1/2 z-20 scale-75 sm:scale-85 opacity-40 sm:opacity-60 cursor-pointer`;
       default:
-        return `${baseStyles} left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 scale-50 opacity-0`;
+        return `${baseStyles} left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 scale-50 opacity-0 pointer-events-none`;
     }
   };
 
   return (
-    <div className="relative w-full h-[420px] ">
+    <div
+      className="relative w-full h-[420px]"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
       {/* Cards Container */}
       <div className="relative w-full h-full overflow-hidden">
-        {children.map((child, index) => (
-          <div
-            key={index}
-            className={getCardStyles(getCardPosition(index))}
-            style={{
-              width: 'min(90%, 390px)',
-            }}
-          >
-            {child}
-          </div>
-        ))}
+        {children.map((child, index) => {
+          const position = getCardPosition(index);
+          return (
+            <div
+              key={index}
+              onClick={() => {
+                if (position === 'left') goToPrevious();
+                if (position === 'right') goToNext();
+              }}
+              className={getCardStyles(position)}
+              style={{
+                width: 'min(90%, 390px)',
+              }}
+            >
+              {child}
+            </div>
+          );
+        })}
       </div>
-
-      {/* Navigation Buttons */}
-      <button
-        onClick={goToPrevious}
-        className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-40 w-10 h-10 sm:w-16 sm:h-12 flex items-center justify-center bg-background rounded-full text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-200"
-        aria-label="Previous"
-      >
-        <ChevronLeft size={20} />
-      </button>
-
-      <button
-        onClick={goToNext}
-        className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-40 w-11 h-10 sm:w-16 sm:h-12 flex items-center justify-center bg-background rounded-full text-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-200"
-        aria-label="Next"
-      >
-        <ChevronRight size={20} />
-      </button>
-
-      {/* Indicators */}
-
     </div>
   );
 };

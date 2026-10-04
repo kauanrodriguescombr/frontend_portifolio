@@ -20,11 +20,11 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="py-4 border-t border-foreground/10">
-      <div className="section-container">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+    <footer className="py-6 border-t border-foreground/10 bg-background text-foreground">
+      <div className="section-container w-full mx-auto lg:!ml-9 px-6 sm:px-10 lg:!p-0">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left">
           {/* Social Links */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center justify-center gap-4">
             {socialLinks.map((link) => (
               <a
                 key={link.label}
@@ -40,7 +40,7 @@ const Footer = () => {
           </div>
 
           {/* Copyright */}
-          <p className="font-body text-sm text-muted-foreground">
+          <p className="font-body text-sm sm:text-base text-muted-foreground text-center sm:text-right">
             Desenvolvido por: <span className="text-foreground font-medium">Kauan Rodrigues</span>
           </p>
         </div>

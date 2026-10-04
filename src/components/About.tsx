@@ -17,7 +17,9 @@ const About = () => {
   const trackRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
-    const ctx = gsap.context(() => {
+    const mm = gsap.matchMedia();
+
+    mm.add("(min-width: 1024px)", () => {
       if (!triggerRef.current || !trackRef.current) return;
 
       const track = trackRef.current;
@@ -31,56 +33,53 @@ const About = () => {
         return lastBlock.offsetTop - firstBlock.offsetTop;
       };
 
-      const distance = getScrollDistance();
-
       gsap.to(track, {
-        y: -distance,
+        y: () => -(lastBlock.offsetTop - firstBlock.offsetTop),
         ease: 'none',
         scrollTrigger: {
           trigger: triggerRef.current,
           pin: true,
           scrub: 1,
           start: 'top top',
-          end: () => `+=${getScrollDistance()}`,
+          end: () => `+=${lastBlock.offsetTop - firstBlock.offsetTop}`,
           invalidateOnRefresh: true,
         },
       });
-    }, sectionRef);
+    });
 
-    return () => ctx.revert();
+    return () => mm.revert();
   }, []);
 
   return (
     <section ref={sectionRef} id="sobre" className="relative overflow-hidden bg-background">
       <div
         ref={triggerRef}
-        className="min-h-screen w-full flex items-center justify-center py-20 md:py-0 px-4 sm:px-8 md:px-12"
+        className="min-h-screen w-full flex items-center justify-center py-20 lg:py-0 px-6 sm:px-10 lg:px-16"
       >
-        <div className="w-full grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 items-center max-h-screen">
+        <div className="w-full max-w-[90rem] mx-auto flex flex-col lg:flex-row items-center justify-between gap-12 sm:gap-16 lg:gap-36 xl:gap-44 lg:max-h-screen">
 
-          {/* Lado Esquerdo Fixo: Título "SOBRE MIM?" */}
-          <div className="md:col-span-6 lg:col-span-6 flex items-center z-10 pt-8 md:pt-0">
+          {/* Título "Sobre Mim" - Centralizado em tablets e celulares, à esquerda em desktop */}
+          <div className="w-full lg:w-auto shrink-0 z-10 flex flex-col items-center lg:items-start text-center lg:text-left pt-4 lg:pt-0">
             <ScrollReveal>
               <h2
-                className="!leading-[80%] uppercase font-heading tracking-tight whitespace-nowrap"
-                style={{ fontSize: 'clamp(3rem, 12vw, 22rem)' }}
+                className="!leading-[80%] uppercase font-heading text-foreground mb-0 text-center lg:text-left whitespace-nowrap sm:whitespace-normal"
+                style={{ fontSize: 'clamp(2.5rem, min(18vw, 28vh), 22rem)' }}
               >
-                <span className="text-white"
-                  style={{ fontSize: 'clamp(2.5rem, min(18vw, 28vh), 22rem)' }}
-                >SOBRE MIM</span>
+                <span className="inline sm:block">Sobre</span>{' '}
+                <span className="inline sm:block text-primary">mim</span>
               </h2>
             </ScrollReveal>
           </div>
 
-          {/* Lado Direito: Palco dos textos (cada bloco tem a altura da área útil h-[65vh] md:h-screen) */}
-          <div className="md:col-span-6 lg:col-span-6 relative h-[60vh] md:h-screen overflow-hidden">
+          {/* Palco dos textos - Em fluxo normal e visível em tablets/mobile, pin e scroll vertical em desktop */}
+          <div className="w-full lg:w-auto flex-1 max-w-2xl lg:max-w-4xl xl:max-w-5xl mx-auto lg:ml-auto relative h-auto lg:h-screen overflow-visible lg:overflow-hidden">
             <div
               ref={trackRef}
-              className="flex flex-col will-change-transform w-full max-w-xl pr-4"
+              className="flex flex-col gap-8 sm:gap-10 lg:gap-0 will-change-auto lg:will-change-transform w-full"
             >
               {paragraphs.map((text, index) => (
-                <div key={index} className="w-full h-[60vh] md:h-screen flex items-center shrink-0">
-                  <p className="font-body text-lg sm:text-2xl md:text-3xl lg:text-4xl text-white font-normal leading-relaxed">
+                <div key={index} className="w-full h-auto lg:h-screen flex items-center justify-center lg:justify-start shrink-0">
+                  <p className="font-body text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl text-white/95 font-normal leading-relaxed w-full text-center lg:text-left">
                     {text.includes("resolução de problemas") ? (
                       <>
                         Destaco-me pela <strong className="text-primary font-semibold">resolução de problemas</strong>, <strong className="text-primary font-semibold">comunicação clara</strong>, <strong className="text-primary font-semibold">aprendizagem rápida</strong> e <strong className="text-primary font-semibold">trabalho em equipe</strong>.
