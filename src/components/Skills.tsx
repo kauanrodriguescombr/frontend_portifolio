@@ -36,6 +36,11 @@ const skills = [
     icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg"
   },
   {
+    title: "Google Antigravity",
+    description: "Desenvolvimento agêntico com IA e automação inteligente.",
+    icon: "/antigravity.svg"
+  },
+  {
     title: "Photoshop",
     description: "Edição e composição visual.",
     icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/photoshop/photoshop-original.svg"

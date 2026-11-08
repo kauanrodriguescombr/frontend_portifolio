@@ -1,7 +1,6 @@
-import { useLayoutEffect, useEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import api, { getImageUrl } from '@/services/api';
 import ScrollReveal from './ScrollReveal';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -16,23 +15,55 @@ export interface ProjectItem {
   access: string;
 }
 
-const ProjectCardSkeleton = () => (
-  <div className="card-brutalist relative overflow-hidden h-[42vh] min-h-[260px] max-h-[480px] flex flex-col justify-end w-[85vw] max-w-[800px] shrink-0 bg-white/5 border border-white/10 p-6 sm:p-8 animate-pulse">
-    <div className="relative z-10 flex flex-col justify-end space-y-4 max-w-2xl">
-      <div className="h-10 sm:h-14 w-2/3 bg-white/10 rounded-lg" />
-      <div className="space-y-2">
-        <div className="h-4 w-full bg-white/10 rounded" />
-        <div className="h-4 w-4/5 bg-white/10 rounded" />
-      </div>
-      <div className="flex flex-wrap gap-2 pt-2">
-        <div className="h-6 w-20 bg-white/10 rounded-full" />
-        <div className="h-6 w-24 bg-white/10 rounded-full" />
-        <div className="h-6 w-16 bg-white/10 rounded-full" />
-        <div className="h-6 w-28 bg-white/10 rounded-full" />
-      </div>
-    </div>
-  </div>
-);
+const projects: ProjectItem[] = [
+  {
+    title: "Fluxo Financeiro",
+    description: "Sistema de controle financeiro pessoal com dashboard e gráficos.",
+    techs: ["ReactJS", "HTML5", "CSS3", "Node.js", "PostgreSQL"],
+    image: "/fluxo-financeiro.avif",
+    repo: "https://github.com/kauandevfr/fluxofinanceirofrontend",
+    access: "https://fluxofinanceiro.kauanrodrigues.com.br",
+  },
+  {
+    title: "Sistema Salve Quebrada",
+    description: "Plataforma de gestão pedagógica e operacional para controle de alunos, turmas, presenças e eventos.",
+    techs: ["ReactJS", "SCSS", "Node.js", "Express", "PostgreSQL"],
+    image: "/sistema-salve-quebrada.avif",
+    repo: "https://github.com/kauandevfr/frontend_dashboard_salvequebrada",
+    access: "https://sistema.salvequebrada.org/",
+  },
+  {
+    title: "Salve Quebrada",
+    description: "Iniciativa social voltada à promoção do esporte e do desenvolvimento social na comunidade.",
+    techs: ["ReactJS", "HTML5", "CSS3"],
+    image: "/salve-quebrada.avif",
+    repo: "https://github.com/kauandevfr/salve-quebrada",
+    access: "https://www.salvequebrada.org/",
+  },
+  {
+    title: "Portifólio",
+    description: "Projeto autoral desenvolvido com apoio de inteligência artificial, com implementação e customização realizadas manualmente.",
+    techs: ["ReactJS", "HTML5", "Inteligência Artificial"],
+    image: "/portifolio.avif",
+    repo: "https://github.com/kauandevfr/portifolio-v2",
+    access: "https://kauanrodrigues.com.br/",
+  },
+  // {
+  //   title: "Tarefas",
+  //   description: "Sistema de controle de tarefas.",
+  //   techs: ["ReactJS", "HTML5", "CSS3", "Node.js", "PostgreSQL"],
+  //   image: "/tarefas.avif",
+  //   repo: "https://github.com/kauandevfr/taskmanagement-frontend",
+  //   access: "https://tarefas.kauanrodrigues.com.br/",
+  // },
+  {
+    title: "Métricas",
+    description: "Sistema que apresenta algumas informações de homelab caseiro.",
+    techs: ["HTML5", "CSS3", "JavaScript", "Inteligência Artificial"],
+    image: "/metricasservidor.avif",
+    access: "https://metricas.kauanrodrigues.com.br/",
+  },
+];
 
 const ProjectCard = ({ project }: { project: ProjectItem }) => {
   const [shimmerKey, setShimmerKey] = useState(0);
@@ -57,8 +88,11 @@ const ProjectCard = ({ project }: { project: ProjectItem }) => {
     >
       {/* Imagem de Fundo Completa */}
       <img
-        src={getImageUrl(project.image)}
+        src={project.image}
         alt={project.title}
+        onError={(e) => {
+          e.currentTarget.src = '/placeholder.svg';
+        }}
         className="absolute inset-0 w-full h-full object-cover"
       />
 
@@ -116,41 +150,7 @@ const Projects = () => {
   const triggerRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
 
-  const [projectsList, setProjectsList] = useState<ProjectItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Busca projetos diretamente da API
-  useEffect(() => {
-    let isMounted = true;
-    setIsLoading(true);
-
-    api
-      .get<{ status: string; projects: ProjectItem[] }>('/projects')
-      .then((data) => {
-        if (isMounted) {
-          setProjectsList(data?.projects || []);
-        }
-      })
-      .catch((error) => {
-        console.error('Falha ao carregar projetos da API:', error);
-        if (isMounted) {
-          setProjectsList([]);
-        }
-      })
-      .finally(() => {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
   useLayoutEffect(() => {
-    if (isLoading || projectsList.length === 0) return;
-
     const ctx = gsap.context(() => {
       if (!sectionRef.current || !triggerRef.current || !trackRef.current) return;
 
@@ -217,7 +217,7 @@ const Projects = () => {
     }, sectionRef);
 
     return () => ctx.revert();
-  }, [isLoading, projectsList]);
+  }, []);
 
   return (
     <section ref={sectionRef} id="projetos" className="relative overflow-hidden w-full max-w-full">
@@ -241,23 +241,9 @@ const Projects = () => {
             paddingRight: 'calc(50vw - min(42.5vw, 400px))',
           }}
         >
-          {isLoading ? (
-            <>
-              <ProjectCardSkeleton />
-              <ProjectCardSkeleton />
-              <ProjectCardSkeleton />
-            </>
-          ) : projectsList.length === 0 ? (
-            <div className="w-full text-center py-20">
-              <p className="font-body text-base text-muted-foreground">
-                Nenhum projeto disponível no momento.
-              </p>
-            </div>
-          ) : (
-            projectsList.map((project, index) => (
-              <ProjectCard key={project.id || index} project={project} />
-            ))
-          )}
+          {projects.map((project, index) => (
+            <ProjectCard key={index} project={project} />
+          ))}
         </div>
       </div>
     </section>
